@@ -1,0 +1,26 @@
+# Environment
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Local database
+backend/local_db.json
+
+# Uploaded/generated images
+backend/static/uploads/
+
+# Optional test images
+test_satellite_ir_image.jpg
+
+# Build
+dist/
+build/
+
+# VS Code
+.vscode/

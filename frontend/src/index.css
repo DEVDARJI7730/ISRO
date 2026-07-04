@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-space-900 text-slate-100 font-sans min-h-screen relative overflow-x-hidden;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%);
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-space-900;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-space-600 rounded-full hover:bg-accent-purple/70 transition-colors;
+  }
+}
+
+@layer components {
+  /* Glassmorphism card utilities */
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl shadow-xl;
+  }
+  
+  .glass-card-hover {
+    @apply transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:shadow-accent-purple/20 hover:shadow-lg;
+  }
+
+  .glass-panel {
+    @apply bg-space-800/60 backdrop-blur-xl border border-white/5 shadow-2xl;
+  }
+  
+  .glass-input {
+    @apply bg-space-900/50 border border-white/10 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-400 focus:outline-none focus:border-accent-purple focus:ring-2 focus:ring-accent-purple/20 transition-all;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-accent-purple to-accent-blue hover:from-accent-indigo hover:to-accent-cyan text-white font-medium px-6 py-3 rounded-xl shadow-lg shadow-accent-purple/20 hover:shadow-accent-blue/30 transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2;
+  }
+
+  .btn-secondary {
+    @apply bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 hover:text-white font-medium px-6 py-3 rounded-xl transition-all duration-200 flex items-center justify-center gap-2;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+  }
+}
+
+/* Background animated meshes */
+.bg-mesh {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(120px);
+  z-index: -1;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.mesh-1 {
+  background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+  top: -10%;
+  right: -5%;
+  animation: glow 15s ease-in-out infinite alternate;
+}
+
+.mesh-2 {
+  background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+  bottom: -10%;
+  left: -5%;
+  animation: glow 20s ease-in-out infinite alternate-reverse;
+}

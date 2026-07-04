@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: isro_ir_backend
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=isro_ir_secret_key_super_secure_9911
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=120
+      - MONGODB_URI=${MONGODB_URI}
+      - LOCAL_DB_FILE=local_db.json
+      - ADMIN_EMAIL=admin@isro.gov.in
+      - ADMIN_PASSWORD=admin123
+    volumes:
+      - backend_uploads:/backend/static/uploads
+      - backend_db:/backend
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: isro_ir_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always
+
+volumes:
+  backend_uploads:
+  backend_db:
