@@ -201,7 +201,11 @@ async def google_callback(code: str):
     }
     
     # Redirect back to the frontend login query handler
-    frontend_url = "http://localhost:5173/login"
+    frontend_url = (
+        "https://irvision-ai-client.onrender.com/login"
+        if os.getenv("RENDER")
+        else "http://localhost:5173/login"
+    )
     user_json = urllib.parse.quote(json.dumps(user_resp))
     redirect_url = f"{frontend_url}?token={access_token}&user={user_json}"
     
