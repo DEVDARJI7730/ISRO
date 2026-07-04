@@ -40,7 +40,11 @@ class Settings:
     # Google OAuth2 Credentials
     GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")
     GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET", "")
-    GOOGLE_REDIRECT_URI: str = os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8000/api/auth/google/callback")
+    GOOGLE_REDIRECT_URI: str = (
+        "https://irvision-ai.onrender.com/api/auth/google/callback"
+        if os.getenv("RENDER")
+        else os.getenv("GOOGLE_REDIRECT_URI", "http://localhost:8000/api/auth/google/callback")
+    )
     
     # Admin Seed
     ADMIN_EMAIL: str = os.getenv("ADMIN_EMAIL", "admin@isro.gov.in")
