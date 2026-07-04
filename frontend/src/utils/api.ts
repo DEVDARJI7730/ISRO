@@ -3,7 +3,9 @@ import axios from 'axios';
 // Create AXIOS client
 // In development, Vite dev server proxies `/api` requests to backend http://localhost:8000
 const api = axios.create({
-  baseURL: '',
+  baseURL: window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1')
+    ? ''
+    : 'https://irvision-ai.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },

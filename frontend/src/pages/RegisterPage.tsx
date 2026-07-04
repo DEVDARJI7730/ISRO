@@ -20,7 +20,9 @@ export const RegisterPage: React.FC = () => {
   }, [isAuthenticated, navigate]);
   const handleGoogleLogin = () => {
     showToast('Redirecting to Google registration...', 'info');
-    const apiUrl = (import.meta as any).env.VITE_API_URL || '';
+    const apiUrl = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1')
+      ? ''
+      : 'https://irvision-ai.onrender.com';
     window.location.href = `${apiUrl}/api/auth/google/login`;
   };
   const handleSubmit = async (e: React.FormEvent) => {
