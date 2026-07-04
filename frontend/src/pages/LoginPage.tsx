@@ -46,7 +46,8 @@ export const LoginPage: React.FC = () => {
   }, [searchParams, showToast]);
   const handleGoogleLogin = () => {
     showToast('Redirecting to Google authentication...', 'info');
-    window.location.href = '/api/auth/google/login';
+    const apiUrl = (import.meta as any).env.VITE_API_URL || '';
+    window.location.href = `${apiUrl}/api/auth/google/login`;
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

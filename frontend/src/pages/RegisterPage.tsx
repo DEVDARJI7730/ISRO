@@ -20,7 +20,8 @@ export const RegisterPage: React.FC = () => {
   }, [isAuthenticated, navigate]);
   const handleGoogleLogin = () => {
     showToast('Redirecting to Google registration...', 'info');
-    window.location.href = '/api/auth/google/login';
+    const apiUrl = (import.meta as any).env.VITE_API_URL || '';
+    window.location.href = `${apiUrl}/api/auth/google/login`;
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
