@@ -357,11 +357,15 @@ class DatabaseWrapper:
             try:
                 query = {"user_email": email}
                 if search_query:
-                    # Case insensitive search
-                    query["$or"] = [
-                        {"original_filename": {"$regex": search_query, "$options": "i"}},
-                        {"id": {"$regex": search_query, "$options": "i"}}
-                    ]
+                    from bson.objectid import ObjectId
+                    # Formulate conditions check
+                    or_conds = [{"original_filename": {"$regex": search_query, "$options": "i"}}]
+                    if len(search_query) == 24 and all(c in "0123456789abcdefABCDEF" for c in search_query):
+                        or_conds.append({"_id": ObjectId(search_query)})
+                    else:
+                        or_conds.append({"id": {"$regex": search_query, "$options": "i"}})
+                    query["$or"] = or_conds
+                    
                 cursor = self.db.history.find(query).sort("timestamp", -1)
                 history = []
                 async for h in cursor:
