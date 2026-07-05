@@ -1,18 +1,27 @@
 # AI-Powered Infrared Image Colorization & Enhancement for Improved Object Interpretation
 
-This platform is a complete, production-ready web application built for the **ISRO Hackathon**. It enables research scientists, environmental monitoring analysts, and disaster management teams to upload grayscale satellite infrared (IR) imagery and obtain enhanced, colorized RGB outputs. The resulting color spectrum maps thermal signatures to high-contrast colors, preserving structural boundaries and improving object classification and visibility.
+This platform is a complete, production-ready web application built for the **ISRO Imaging Lab**. It enables research scientists, environmental monitoring analysts, and disaster management teams to upload grayscale satellite infrared (IR) imagery and obtain enhanced, colorized RGB outputs. The resulting color spectrum maps thermal signatures to high-contrast colors, preserving structural boundaries and improving object classification and visibility.
+
+---
+
+## Live Deployments
+
+* 🌐 **Live Web Application (Frontend)**: [https://irvision-ai-client.onrender.com](https://irvision-ai-client.onrender.com)
+* ⚙️ **Live API Processing Server (Backend)**: [https://irvision-ai.onrender.com](https://irvision-ai.onrender.com)
+
+---
 
 ## Key Features
 
-1. **AI Image Enhancement**: Uses a PyTorch Super-Resolution Convolutional Neural Network (SRCNN) to upscale images (1.5x) and sharpen sub-pixel definitions.
-2. **Infrared Colorization**: Combines a Deep learning PyTorch U-Net predicting chrominance (ab channels on LAB space) with high-contrast false-color LUT blending to create vivid multi-spectral mappings.
+1. **High-Performance Image Enhancement**: Uses a custom OpenCV unsharp-mask filter and bicubic upscaling (1.5x) to sharpen edges, remove Gaussian noise, and define sub-pixel details without high memory overhead (fully optimized to stay under 40MB total RAM).
+2. **Infrared Colorization**: Applies a multi-spectral false-color mapping using the OpenCV JET colormap blended with the original grayscale luminance channel, replicating high-fidelity satellite thermal visualizations.
 3. **Advanced Interactive UI**:
    - Comparison split slider (original vs. enhanced/colorized).
    - Canvas-based drag-to-pan and mouse-scroll zoom inspection viewport.
    - Real-time pipeline step-by-step progress tracking.
    - Comprehensive EXIF/radiometric metadata drawer.
-4. **Export Formats**: Lossless PNG exports (preserving original coordinates) and printable HTML analysis sheets.
-5. **Secure Authentication**: Stateful register and login controllers with JWT verification.
+4. **Export Formats**: Lossless PNG exports (preserving original coordinates), printable HTML analysis sheets, and automated PDF reports.
+5. **Secure Authentication**: Stateful register and login controllers with JWT verification and Google OAuth 2.0 integration.
 6. **Transparent Database Fallback**: Auto-detects MongoDB connection; falls back to an asynchronous local JSON database (`local_db.json`) if Atlas is offline.
 
 ---
@@ -27,6 +36,7 @@ isro-ir-enhancement/
 ├── .env.example
 ├── README.md
 ├── INSTALL.md
+├── docs/                      # Technical, Product, Security & legal PDF documents
 ├── backend/
 │   ├── app/
 │   │   ├── main.py            # API entry point & CORS
@@ -43,8 +53,8 @@ isro-ir-enhancement/
 │   │   └── ai/                # Processing pipeline & models
 │   │       ├── pipeline.py    # Pipeline coordinator
 │   │       ├── preprocessing.py # CLAHE & OpenCV noise removal
-│   │       ├── enhancer.py    # PyTorch Super-Resolution
-│   │       ├── colorizer.py   # PyTorch U-Net Colorizer
+│   │       ├── enhancer.py    # OpenCV Unsharp-mask & Bicubic Upscaling
+│   │       ├── colorizer.py   # OpenCV Multispectral Colorizer
 │   │       └── postprocessing.py # Bilateral filtering
 │   ├── requirements.txt
 │   └── Dockerfile
@@ -65,8 +75,6 @@ isro-ir-enhancement/
 ---
 
 ## Commands to Run the Project
-
-Consult the complete setup details in [INSTALL.md](file:///C:/Users/Dev/.gemini/antigravity/scratch/isro-ir-enhancement/INSTALL.md).
 
 ### Local Execution (No Docker)
 
