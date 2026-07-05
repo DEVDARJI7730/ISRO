@@ -5,7 +5,7 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
-from backend.app.models.schemas import UserRegister, UserResponse, Token
+from backend.app.models.schemas import UserRegister, UserResponse, Token, ForgotPasswordRequest, ResetPasswordRequest
 from backend.app.auth import hash_password, verify_password, create_access_token, get_current_user
 from backend.app.database import db
 from backend.app.config import settings
@@ -212,3 +212,66 @@ async def google_callback(code: str):
     
     await db.add_log("INFO", f"User {email} authenticated via Google OAuth successfully.")
     return RedirectResponse(url=redirect_url)
+
+
+@router.post("/forgot-password")
+async def forgot_password(payload: ForgotPasswordRequest):
+    import random
+    from datetime import datetime, timedelta
+    email = payload.email.lower()
+    user = await db.get_user(email)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Scientist account not found with this email address."
+        )
+    if user.get("is_google_user", False):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Google authenticated accounts cannot reset password manually."
+        )
+    otp_code = str(random.randint(100000, 999999))
+    expires_at = datetime.utcnow() + timedelta(minutes=10)
+    await db.save_otp(email, otp_code, expires_at)
+    await db.add_log("WARNING", f"PASSWORD RESET OTP for user {email}: {otp_code} (Expires in 10 mins)")
+    return {"message": "Reset OTP code generated successfully. Please retrieve it from the Systems Admin log dashboard."}
+
+
+@router.post("/reset-password")
+async def reset_password(payload: ResetPasswordRequest):
+    from datetime import datetime
+    email = payload.email.lower()
+    user = await db.get_user(email)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Scientist account not found."
+        )
+    otp_code = user.get("otp_code")
+    otp_expires_at = user.get("otp_expires_at")
+    if not otp_code or not otp_expires_at:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No active password reset request exists for this account."
+        )
+    if isinstance(otp_expires_at, str):
+        try:
+            expires_dt = datetime.fromisoformat(otp_expires_at)
+        except Exception:
+            expires_dt = datetime.utcnow()
+    else:
+        expires_dt = otp_expires_at
+    if datetime.utcnow() > expires_dt:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password reset OTP code has expired."
+        )
+    if payload.otp != otp_code:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid 6-digit OTP code."
+        )
+    hashed_password = hash_password(payload.new_password)
+    await db.reset_password(email, hashed_password)
+    await db.add_log("INFO", f"Password reset successfully for user {email}.")
+    return {"message": "Password reset successfully. You can now login with your new password."}

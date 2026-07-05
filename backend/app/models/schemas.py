@@ -37,3 +37,11 @@ class SystemStatsResponse(BaseModel):
     total_downloads: int
     avg_processing_time_sec: float
     db_mode: str
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    otp: str = Field(..., min_length=6, max_length=6)
+    new_password: str = Field(..., min_length=6)

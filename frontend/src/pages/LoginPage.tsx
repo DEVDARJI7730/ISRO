@@ -94,10 +94,12 @@ export const LoginPage: React.FC = () => {
               />
             </div>
           </div>
-          {/* Password */}
           <div className="flex flex-col gap-1.5">
             <div className="flex justify-between items-center">
               <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">Password</label>
+              <Link to="/forgot-password" className="text-xs font-semibold text-accent-blue hover:text-accent-blue/80 transition-colors">
+                Forgot Password?
+              </Link>
             </div>
             <div className="relative">
               <FiLock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />

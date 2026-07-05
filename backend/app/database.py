@@ -89,6 +89,29 @@ class JSONDatabase:
                 return True
             return False
 
+    async def save_otp(self, email: str, otp: str, expires_at_iso: str) -> bool:
+        async with self.lock:
+            data = self._read()
+            for i, user in enumerate(data["users"]):
+                if user["email"] == email:
+                    data["users"][i]["otp_code"] = otp
+                    data["users"][i]["otp_expires_at"] = expires_at_iso
+                    self._write(data)
+                    return True
+            return False
+
+    async def reset_password(self, email: str, password_hash: str) -> bool:
+        async with self.lock:
+            data = self._read()
+            for i, user in enumerate(data["users"]):
+                if user["email"] == email:
+                    data["users"][i]["password_hash"] = password_hash
+                    data["users"][i].pop("otp_code", None)
+                    data["users"][i].pop("otp_expires_at", None)
+                    self._write(data)
+                    return True
+            return False
+
     async def create_history_record(self, record: Dict[str, Any]) -> Dict[str, Any]:
         async with self.lock:
             data = self._read()
@@ -283,6 +306,33 @@ class DatabaseWrapper:
             except Exception:
                 pass
         return await self.local_db.delete_user(email)
+
+    async def save_otp(self, email: str, otp: str, expires_at: datetime) -> bool:
+        if self.mode == "MongoDB" and self.db is not None:
+            try:
+                res = await self.db.users.update_one(
+                    {"email": email},
+                    {"$set": {"otp_code": otp, "otp_expires_at": expires_at}}
+                )
+                return res.modified_count > 0
+            except Exception:
+                pass
+        return await self.local_db.save_otp(email, otp, expires_at.isoformat())
+
+    async def reset_password(self, email: str, password_hash: str) -> bool:
+        if self.mode == "MongoDB" and self.db is not None:
+            try:
+                res = await self.db.users.update_one(
+                    {"email": email},
+                    {
+                        "$set": {"password_hash": password_hash},
+                        "$unset": {"otp_code": "", "otp_expires_at": ""}
+                    }
+                )
+                return res.modified_count > 0
+            except Exception:
+                pass
+        return await self.local_db.reset_password(email, password_hash)
 
     async def create_history_record(self, record: Dict[str, Any]) -> Dict[str, Any]:
         if self.mode == "MongoDB" and self.db is not None:
