@@ -52,6 +52,13 @@ async def process_image_pipeline(
     if img is None:
         raise ValueError("Could not read uploaded image file. It may be corrupted.")
         
+    # Downscale extremely large images to prevent Out-of-Memory (OOM) crashes on 512MB RAM free hosting tiers
+    max_dim = 1000
+    h, w = img.shape[:2]
+    if max(h, w) > max_dim:
+        scale_ratio = max_dim / max(h, w)
+        img = cv2.resize(img, (int(w * scale_ratio), int(h * scale_ratio)), interpolation=cv2.INTER_AREA)
+        
     # Check channels
     if len(img.shape) == 2:
         # Grayscale IR image - normalize to BGR representation
