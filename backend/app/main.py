@@ -1,8 +1,4 @@
 import os
-# Configure PyTorch CPU thread limits to reduce memory pre-allocation
-import torch
-torch.set_num_threads(1)
-torch.set_num_interop_threads(1)
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware

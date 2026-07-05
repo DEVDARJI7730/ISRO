@@ -53,7 +53,7 @@ async def process_image_pipeline(
         raise ValueError("Could not read uploaded image file. It may be corrupted.")
         
     # Downscale extremely large images to prevent Out-of-Memory (OOM) crashes on 512MB RAM free hosting tiers
-    max_dim = 800
+    max_dim = 1600
     h, w = img.shape[:2]
     if max(h, w) > max_dim:
         scale_ratio = max_dim / max(h, w)
