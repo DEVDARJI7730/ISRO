@@ -60,11 +60,7 @@ export const LandingPage: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="flex flex-col items-center"
         >
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-accent-purple animate-pulse" />
-            <span className="text-xs font-semibold text-slate-300 uppercase tracking-widest">ISRO Hackathon 2026</span>
-          </div>
+
 
           {/* Heading */}
           <h1 className="font-display font-black text-5xl md:text-7xl tracking-tight text-white mb-6 leading-tight max-w-4xl">

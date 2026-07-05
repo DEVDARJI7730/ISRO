@@ -128,7 +128,7 @@ export const ForgotPasswordPage: React.FC = () => {
             <div className="bg-amber-950/20 border border-amber-500/20 rounded-xl p-4 flex gap-3 text-amber-200/90 mb-2">
               <FiAlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
               <div className="text-xs leading-relaxed">
-                <span className="font-bold">Retrieval Note:</span> Since SMTP is inactive, retrieve the generated 6-digit OTP code from the **Systems Admin log dashboard** (or backend logs).
+                <span className="font-bold">Retrieval Note:</span> Please check your registered email inbox for the 6-digit OTP code. (Fallback: You can also copy the code from the **Systems Admin log dashboard**).
               </div>
             </div>
 
