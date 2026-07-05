@@ -225,11 +225,6 @@ async def forgot_password(payload: ForgotPasswordRequest):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Scientist account not found with this email address."
         )
-    if user.get("is_google_user", False):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Google authenticated accounts cannot reset password manually."
-        )
     otp_code = str(random.randint(100000, 999999))
     expires_at = datetime.utcnow() + timedelta(minutes=10)
     await db.save_otp(email, otp_code, expires_at)
