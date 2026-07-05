@@ -228,6 +228,7 @@ async def forgot_password(payload: ForgotPasswordRequest):
     otp_code = str(random.randint(100000, 999999))
     expires_at = datetime.utcnow() + timedelta(minutes=10)
     await db.save_otp(email, otp_code, expires_at)
+    print(f"PASSWORD RESET OTP for user {email}: {otp_code} (Expires in 10 mins)", flush=True)
     await db.add_log("WARNING", f"PASSWORD RESET OTP for user {email}: {otp_code} (Expires in 10 mins)")
     return {"message": "Reset OTP code generated successfully. Please retrieve it from the Systems Admin log dashboard."}
 
