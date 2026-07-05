@@ -69,8 +69,11 @@ export const UploadPage: React.FC = () => {
 
     try {
       const token = localStorage.getItem('token');
+      const apiUrl = window.location.hostname.includes('localhost') || window.location.hostname.includes('127.0.0.1')
+        ? ''
+        : 'https://irvision-ai.onrender.com';
       // Use standard fetch to read streamed response body
-      const response = await fetch('/api/upload/process', {
+      const response = await fetch(`${apiUrl}/api/upload/process`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
