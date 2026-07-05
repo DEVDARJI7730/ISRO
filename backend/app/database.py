@@ -248,6 +248,10 @@ class DatabaseWrapper:
                 user = await self.db.users.find_one({"email": email})
                 if user:
                     user["id"] = str(user["_id"])
+                    if isinstance(user.get("created_at"), datetime):
+                        user["created_at"] = user["created_at"].isoformat()
+                    if isinstance(user.get("otp_expires_at"), datetime):
+                        user["otp_expires_at"] = user["otp_expires_at"].isoformat()
                     del user["_id"]
                     return user
                 return None
