@@ -214,6 +214,57 @@ async def google_callback(code: str):
     return RedirectResponse(url=redirect_url)
 
 
+async def send_otp_email(to_email: str, otp_code: str) -> bool:
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    
+    host = settings.SMTP_HOST
+    port = settings.SMTP_PORT
+    username = settings.SMTP_USERNAME
+    password = settings.SMTP_PASSWORD
+    sender = settings.SMTP_FROM or username
+    
+    if not host or not username or not password:
+        print(f"[SMTP Fallback] SMTP not configured. Logged OTP for {to_email}: {otp_code}", flush=True)
+        return False
+        
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = sender
+        msg['To'] = to_email
+        msg['Subject'] = "IRVision AI - Scientist Password Reset OTP"
+        
+        body = f"""
+        <html>
+            <body style="font-family: Arial, sans-serif; background-color: #0c081a; color: #ffffff; padding: 25px; border-radius: 8px;">
+                <h2 style="color: #9d4edd; text-align: center;">IRVision AI Recovery</h2>
+                <p>A password reset OTP was requested for your scientist account.</p>
+                <div style="background-color: #1a1635; border: 1px solid #9d4edd; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; color: #ffffff; margin: 15px 0;">
+                    {otp_code}
+                </div>
+                <p style="font-size: 11px; color: #a0aec0;">This verification code is valid for 10 minutes. If you did not request this, you can safely ignore this email.</p>
+            </body>
+        </html>
+        """
+        msg.attach(MIMEText(body, 'html'))
+        
+        if port == 465:
+            server = smtplib.SMTP_SSL(host, port)
+        else:
+            server = smtplib.SMTP(host, port)
+            server.starttls()
+            
+        server.login(username, password)
+        server.sendmail(sender, to_email, msg.as_string())
+        server.quit()
+        print(f"[SMTP Success] Sent password reset OTP email to {to_email}", flush=True)
+        return True
+    except Exception as e:
+        print(f"[SMTP Error] Failed to send email to {to_email}: {str(e)}", flush=True)
+        return False
+
+
 @router.post("/forgot-password")
 async def forgot_password(payload: ForgotPasswordRequest):
     import random
@@ -228,8 +279,15 @@ async def forgot_password(payload: ForgotPasswordRequest):
     otp_code = str(random.randint(100000, 999999))
     expires_at = datetime.utcnow() + timedelta(minutes=10)
     await db.save_otp(email, otp_code, expires_at)
-    print(f"PASSWORD RESET OTP for user {email}: {otp_code} (Expires in 10 mins)", flush=True)
-    await db.add_log("WARNING", f"PASSWORD RESET OTP for user {email}: {otp_code} (Expires in 10 mins)")
+    
+    # Send via SMTP
+    smtp_sent = await send_otp_email(email, otp_code)
+    
+    print(f"PASSWORD RESET OTP for user {email}: {otp_code} (Expires in 10 mins) [SMTP Sent: {smtp_sent}]", flush=True)
+    await db.add_log("WARNING", f"PASSWORD RESET OTP for user {email}: {otp_code} (Expires in 10 mins). SMTP status: {'Sent' if smtp_sent else 'Failed/Logged'}")
+    
+    if smtp_sent:
+        return {"message": "Reset OTP code sent successfully to your registered email account."}
     return {"message": "Reset OTP code generated successfully. Please retrieve it from the Systems Admin log dashboard."}
 
 

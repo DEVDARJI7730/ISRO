@@ -49,6 +49,14 @@ class Settings:
     # Admin Seed
     ADMIN_EMAIL: str = os.getenv("ADMIN_EMAIL", "admin@isro.gov.in")
     ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "admin123")
+
+    # SMTP Email Server Settings
+    SMTP_HOST: str = os.getenv("SMTP_HOST", "")
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
+    SMTP_USERNAME: str = os.getenv("SMTP_USERNAME", "")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
+    SMTP_FROM: str = os.getenv("SMTP_FROM", "")
+
 settings = Settings()
 # Ensure Upload directories exist
 os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
