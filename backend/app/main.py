@@ -14,9 +14,9 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS Configuration
-# Allow frontend dev server and any local testing origins parsed from configuration settings
 origins = [origin.strip() for origin in settings.CORS_ORIGINS.split(",") if origin.strip()]
+if os.getenv("RENDER"):
+    origins.append("https://irvision-ai-client.onrender.com")
 
 app.add_middleware(
     CORSMiddleware,
