@@ -77,7 +77,8 @@ class StorageManager:
                 print(f"Failed to upload {filename} to S3: {e}. Falling back to local static URL.")
                 
         # Fallback to local static URL path
-        return f"/static/uploads/{filename}"
+        base_url = "https://irvision-ai.onrender.com" if os.getenv("RENDER") else ""
+        return f"{base_url}/static/uploads/{filename}"
 
     async def delete_file(self, file_url: str):
         """Removes a file from S3 or local static uploads folder."""
