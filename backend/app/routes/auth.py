@@ -250,9 +250,9 @@ async def send_otp_email(to_email: str, otp_code: str) -> bool:
         msg.attach(MIMEText(body, 'html'))
         
         if port == 465:
-            server = smtplib.SMTP_SSL(host, port)
+            server = smtplib.SMTP_SSL(host, port, timeout=5.0)
         else:
-            server = smtplib.SMTP(host, port)
+            server = smtplib.SMTP(host, port, timeout=5.0)
             server.starttls()
             
         server.login(username, password)
