@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../components/Toast';
-import { FiMail, FiLock, FiKey, FiArrowRight, FiArrowLeft, FiAlertTriangle } from 'react-icons/fi';
+import { FiMail, FiLock, FiKey, FiArrowRight, FiArrowLeft } from 'react-icons/fi';
 import api from '../utils/api';
 
 export const ForgotPasswordPage: React.FC = () => {
@@ -124,14 +124,6 @@ export const ForgotPasswordPage: React.FC = () => {
           </form>
         ) : (
           <form onSubmit={handleResetPassword} className="space-y-5">
-            {/* Alert Box for OTP logs retrieval */}
-            <div className="bg-amber-950/20 border border-amber-500/20 rounded-xl p-4 flex gap-3 text-amber-200/90 mb-2">
-              <FiAlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-              <div className="text-xs leading-relaxed">
-                <span className="font-bold">Retrieval Note:</span> Please check your registered email inbox for the 6-digit OTP code. (Fallback: You can also copy the code from the **Systems Admin log dashboard**).
-              </div>
-            </div>
-
             {/* OTP Code */}
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-semibold uppercase tracking-wider text-slate-400">
@@ -140,13 +132,13 @@ export const ForgotPasswordPage: React.FC = () => {
               <div className="relative">
                 <FiKey className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <input
-                  type="text"
+                  type="password"
                   required
                   maxLength={6}
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                   placeholder="Enter 6-digit OTP"
-                  className="w-full bg-space-950/50 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-accent-purple focus:ring-1 focus:ring-accent-purple/20 transition-all font-medium tracking-widest text-center text-lg"
+                  className="w-full bg-space-950/50 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-accent-purple focus:ring-1 focus:ring-accent-purple/20 transition-all font-medium tracking-widest text-center text-lg mask-asterisk"
                 />
               </div>
             </div>
@@ -164,7 +156,7 @@ export const ForgotPasswordPage: React.FC = () => {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Minimum 6 characters"
-                  className="w-full bg-space-950/50 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-accent-purple focus:ring-1 focus:ring-accent-purple/20 transition-all font-medium"
+                  className="w-full bg-space-950/50 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-accent-purple focus:ring-1 focus:ring-accent-purple/20 transition-all font-medium mask-asterisk"
                 />
               </div>
             </div>
@@ -182,7 +174,7 @@ export const ForgotPasswordPage: React.FC = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm new password"
-                  className="w-full bg-space-950/50 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-accent-purple focus:ring-1 focus:ring-accent-purple/20 transition-all font-medium"
+                  className="w-full bg-space-950/50 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-accent-purple focus:ring-1 focus:ring-accent-purple/20 transition-all font-medium mask-asterisk"
                 />
               </div>
             </div>

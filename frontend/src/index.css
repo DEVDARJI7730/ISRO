@@ -79,3 +79,9 @@
   left: -5%;
   animation: glow 20s ease-in-out infinite alternate-reverse;
 }
+
+/* Custom class to mask sensitive fields like password and OTP as asterisks */
+.mask-asterisk {
+  -webkit-text-security: asterisk !important;
+  text-security: asterisk !important;
+}
