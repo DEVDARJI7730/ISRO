@@ -231,7 +231,32 @@ async def send_otp_email(to_email: str, otp_code: str) -> bool:
     </html>
     """
     
-    # 1. Try Resend HTTP API (recommended for Render since SMTP is blocked)
+    # 1. Try Brevo HTTP API (allows sending to any address for free without verified domains)
+    brevo_api_key = os.getenv("BREVO_API_KEY")
+    if brevo_api_key:
+        try:
+            headers = {
+                "api-key": brevo_api_key,
+                "Content-Type": "application/json"
+            }
+            sender_email = settings.SMTP_FROM or "darjidev2504@gmail.com"
+            payload = {
+                "sender": {"email": sender_email, "name": "IRVision AI"},
+                "to": [{"email": to_email}],
+                "subject": "IRVision AI - Scientist Password Reset OTP",
+                "htmlContent": body
+            }
+            async with httpx.AsyncClient() as client:
+                res = await client.post("https://api.brevo.com/v3/smtp/email", headers=headers, json=payload, timeout=5.0)
+                if res.status_code in (200, 201, 202):
+                    print(f"[Brevo Success] Sent password reset OTP email to {to_email}", flush=True)
+                    return True
+                else:
+                    print(f"[Brevo Error] API returned status {res.status_code}: {res.text}", flush=True)
+        except Exception as e:
+            print(f"[Brevo Error] Failed to send email via Brevo API: {str(e)}", flush=True)
+
+    # 2. Try Resend HTTP API (fallback, requires domain verification for non-owners)
     resend_api_key = os.getenv("RESEND_API_KEY")
     if resend_api_key:
         try:
