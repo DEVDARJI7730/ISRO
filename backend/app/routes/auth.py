@@ -215,10 +215,48 @@ async def google_callback(code: str):
 
 
 async def send_otp_email(to_email: str, otp_code: str) -> bool:
-    import smtplib
     from email.mime.text import MIMEText
     from email.mime.multipart import MIMEMultipart
     
+    body = f"""
+    <html>
+        <body style="font-family: Arial, sans-serif; background-color: #0c081a; color: #ffffff; padding: 25px; border-radius: 8px;">
+            <h2 style="color: #9d4edd; text-align: center;">IRVision AI Recovery</h2>
+            <p>A password reset OTP was requested for your scientist account.</p>
+            <div style="background-color: #1a1635; border: 1px solid #9d4edd; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; color: #ffffff; margin: 15px 0;">
+                {otp_code}
+            </div>
+            <p style="font-size: 11px; color: #a0aec0;">This verification code is valid for 10 minutes. If you did not request this, you can safely ignore this email.</p>
+        </body>
+    </html>
+    """
+    
+    # 1. Try Resend HTTP API (recommended for Render since SMTP is blocked)
+    resend_api_key = os.getenv("RESEND_API_KEY")
+    if resend_api_key:
+        try:
+            headers = {
+                "Authorization": f"Bearer {resend_api_key}",
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "from": "IRVision AI <onboarding@resend.dev>",
+                "to": to_email,
+                "subject": "IRVision AI - Scientist Password Reset OTP",
+                "html": body
+            }
+            async with httpx.AsyncClient() as client:
+                res = await client.post("https://api.resend.com/emails", headers=headers, json=payload, timeout=5.0)
+                if res.status_code in (200, 201):
+                    print(f"[Resend Success] Sent password reset OTP email to {to_email}", flush=True)
+                    return True
+                else:
+                    print(f"[Resend Error] API returned status {res.status_code}: {res.text}", flush=True)
+        except Exception as e:
+            print(f"[Resend Error] Failed to send email via Resend API: {str(e)}", flush=True)
+
+    # 2. Fallback to standard SMTP (for local run or environments allowing SMTP)
+    import smtplib
     host = settings.SMTP_HOST
     port = settings.SMTP_PORT
     username = settings.SMTP_USERNAME
@@ -234,19 +272,6 @@ async def send_otp_email(to_email: str, otp_code: str) -> bool:
         msg['From'] = sender
         msg['To'] = to_email
         msg['Subject'] = "IRVision AI - Scientist Password Reset OTP"
-        
-        body = f"""
-        <html>
-            <body style="font-family: Arial, sans-serif; background-color: #0c081a; color: #ffffff; padding: 25px; border-radius: 8px;">
-                <h2 style="color: #9d4edd; text-align: center;">IRVision AI Recovery</h2>
-                <p>A password reset OTP was requested for your scientist account.</p>
-                <div style="background-color: #1a1635; border: 1px solid #9d4edd; padding: 15px; border-radius: 8px; font-size: 24px; font-weight: bold; text-align: center; letter-spacing: 5px; color: #ffffff; margin: 15px 0;">
-                    {otp_code}
-                </div>
-                <p style="font-size: 11px; color: #a0aec0;">This verification code is valid for 10 minutes. If you did not request this, you can safely ignore this email.</p>
-            </body>
-        </html>
-        """
         msg.attach(MIMEText(body, 'html'))
         
         if port == 465:
